@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="sjson.hpp">
+    <ClInclude Include="hpjson.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,10 +1,10 @@
 #include <iostream>
 
-#include "sjson.hpp"
+#include "hpjson.hpp"
 
 #include <map>
 
-using namespace sjson;
+using namespace hpjson;
 
 int main(int)
 {

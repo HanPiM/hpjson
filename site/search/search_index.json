@@ -1,0 +1,1 @@
+{"config":{"indexing":"full","lang":["en"],"min_search_length":3,"prebuild_index":false,"separator":"[\\s\\-]+"},"docs":[{"location":"","text":"title1 This is a test.","title":"title1"},{"location":"#title1","text":"This is a test.","title":"title1"}]}

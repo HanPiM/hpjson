@@ -7,7 +7,7 @@
 
 #include <algorithm>
 
-namespace sjson
+namespace hpjson
 {
 
 struct json_type
@@ -560,7 +560,7 @@ using json = _json<>;
 
 };
 
-inline sjson::json_pointer operator "" _json_pointer(const char* s, size_t len)
+inline hpjson::json_pointer operator "" _json_pointer(const char* s, size_t len)
 {
-	return sjson::json_pointer(std::string(s, len));
+	return hpjson::json_pointer(std::string(s, len));
 }
