@@ -55,7 +55,7 @@ template<
 	typename _string_t = std::string,
 	template <typename _key_t, typename _val_t> typename _map_t = std::unordered_map
 >
-class _json
+class _basic_json
 {
 private:
 
@@ -66,14 +66,14 @@ public:
 	using string_t = _string_t;
 	using string_char_t = typename string_t::value_type;
 
-	class object : public _map_t<string_t, _json>
+	class object : public _map_t<string_t, _basic_json>
 	{
 	public:
 	};
-	class array : public std::vector<_json>
+	class array : public std::vector<_basic_json>
 	{
 	public:
-		using _base_t = std::vector<_json>;
+		using _base_t = std::vector<_basic_json>;
 		array() : _base_t() {}
 		array(std::initializer_list<_my_initializer_list> x)
 		{
@@ -100,10 +100,10 @@ private:
 
 public:
 
-	_json() :_data(nullptr) {}
+	_basic_json() :_data(nullptr) {}
 	template <typename _t>
-	_json(const _t& x) { assign(x); }
-	_json(const std::initializer_list<_my_initializer_list>& x)
+	_basic_json(const _t& x) { assign(x); }
+	_basic_json(const std::initializer_list<_my_initializer_list>& x)
 	{
 		_assign(_my_initializer_list(x));
 	}
@@ -123,9 +123,9 @@ public:
 	void assign(const _t& x) { _data = x; }
 	// char [] 会被当成 bool 是为什么?
 	void assign(const string_char_t x[]) { _data = std::move(string_t(x)); }
-	void assign(const _json& x) { _data = x._data; }
+	void assign(const _basic_json& x) { _data = x._data; }
 
-	const _json& operator=(const _json& x)
+	const _basic_json& operator=(const _basic_json& x)
 	{
 		assign(x);
 		return x;
@@ -216,41 +216,41 @@ public:
 	// operator []
 
 	// 如果超出数组范围，会更改大小
-	_json& operator[](size_t idx)
+	_basic_json& operator[](size_t idx)
 	{
 		auto& arr = get<array>();
 		if (idx >= arr.size())arr.resize(idx + 1);
 		return arr[idx];
 	}
-	const _json& operator[](size_t idx)const { return get<array>()[idx]; }
+	const _basic_json& operator[](size_t idx)const { return get<array>()[idx]; }
 
-	_json& operator[](const string_t& key) { return get<object>()[key]; }
-	const _json& operator[](const string_t& key)const
+	_basic_json& operator[](const string_t& key) { return get<object>()[key]; }
+	const _basic_json& operator[](const string_t& key)const
 	{
 		const auto& obj = get<object>();
 		const auto& it = obj.find(key);
-		return (it == obj.end()) ? _make_tmp<_json>() : it->second;
+		return (it == obj.end()) ? _make_tmp<_basic_json>() : it->second;
 	}
 
 	// 不使用 string_char_t* 以防 0 被错误识别
 	template <typename _t>
-	_json& operator[](const _t* const key)
+	_basic_json& operator[](const _t* const key)
 	{
 		return this->operator[](std::move(string_t(key)));
 	}
 	template <typename _t>
-	const _json& operator[](const _t* const key)const
+	const _basic_json& operator[](const _t* const key)const
 	{
 		return this->operator[](std::move(string_t(key)));
 	}
 
 	// at
 
-	_json& at(size_t idx) { return get<array>().at(idx); }
-	const _json& at(size_t idx)const { return get<array>().at(idx); }
+	_basic_json& at(size_t idx) { return get<array>().at(idx); }
+	const _basic_json& at(size_t idx)const { return get<array>().at(idx); }
 
-	_json& at(const string_t& key) { return get<object>().at(key); }
-	const _json& at(const string_t& key)const { return get<object>().at(key); }
+	_basic_json& at(const string_t& key) { return get<object>().at(key); }
+	const _basic_json& at(const string_t& key)const { return get<object>().at(key); }
 
 
 private:
@@ -286,7 +286,7 @@ private:
 	{
 	public:
 
-		_my_initializer_list(const _json& x) :_data(x) {}
+		_my_initializer_list(const _basic_json& x) :_data(x) {}
 
 		/*
 		* {a,b,c} : 这种情况会对每一个元素调用该函数来初始化
@@ -300,7 +300,7 @@ private:
 		* 会调用该函数来初始化
 		*/
 		template <typename... _ts>
-		_my_initializer_list(const _ts &...args) : _data(array({ _json(args)... })) {}
+		_my_initializer_list(const _ts &...args) : _data(array({ _basic_json(args)... })) {}
 		
 		_my_initializer_list(std::initializer_list<_my_initializer_list> x)
 		{
@@ -311,12 +311,12 @@ private:
 			for (auto& it : x)
 			{
 				const auto& node = it._data;
-				if ((!node.is<json_type::array>()) || node.get<_json::array>().size() != 2)
+				if ((!node.is<json_type::array>()) || node.get<_basic_json::array>().size() != 2)
 				{
 					is_obj = false;
 					break;
 				}
-				if (!node.get<_json::array>()[0].is<json_type::string>())
+				if (!node.get<_basic_json::array>()[0].is<json_type::string>())
 				{
 					is_obj = false;
 					break;
@@ -324,34 +324,34 @@ private:
 			}
 			if (is_obj)
 			{
-				_data = _json::object();
-				auto& dest = _data.get<_json::object>();
+				_data = _basic_json::object();
+				auto& dest = _data.get<_basic_json::object>();
 				for (auto& it : x)
 				{
 					dest.insert(
 						{
-							it._data.get<_json::array>()[0].get<std::string>(),
-							it._data.get<_json::array>()[1]
+							it._data.get<_basic_json::array>()[0].get<std::string>(),
+							it._data.get<_basic_json::array>()[1]
 						}
 					);
 				}
 				return;
 			}
-			_data = _json::array();
-			auto& dest = _data.get<_json::array>();
+			_data = _basic_json::array();
+			auto& dest = _data.get<_basic_json::array>();
 			for (auto& it : x)
 			{
 				dest.push_back(it._data);
 			}
 		}
 
-		_json& data()& { return _data; }
-		const _json& data() const& { return _data; }
+		_basic_json& data()& { return _data; }
+		const _basic_json& data() const& { return _data; }
 
-		_json&& data()&& { return std::move(_data); }
+		_basic_json&& data()&& { return std::move(_data); }
 
 	private:
-		_json _data;
+		_basic_json _data;
 	};
 
 	void _assign(const _my_initializer_list& x) { assign(x.data()); }
@@ -361,7 +361,7 @@ class json_pointer
 {
 public:
 
-	json_pointer(const std::string& s = "")
+	explicit json_pointer(const std::string& s = "")
 	{
 		_split(s, _data);
 	}
@@ -396,6 +396,20 @@ public:
 	friend json_pointer operator/(json_pointer x, size_t y)
 	{
 		return x /= y;
+	}
+
+	bool operator==(const json_pointer& x)const
+	{
+		return _data == x._data;
+	}
+	bool operator!=(const json_pointer& x)const
+	{
+		return !(*this == x);
+	}
+
+	inline operator std::string()const
+	{
+		return to_string();
 	}
 
 	// to_string
@@ -556,7 +570,7 @@ public:
 
 };
 
-using json = _json<>;
+using json = _basic_json<>;
 
 };
 

@@ -1,47 +1,79 @@
-#include <iostream>
+﻿#include <iostream>
+#include <Windows.h>
+#include <fstream>
 
-#include "hpjson.hpp"
+#define _SJSON_DISABLE_AUTO_TYPE_ADJUST
 
-#include <map>
+#include "sjson.hpp"
 
-using namespace hpjson;
+#include "C:\Users\Administrator\Downloads\json.hpp"
 
-int main(int)
+using namespace sjson;
+
+int main()
 {
-	json j;
+	nlohmann::json x;
 	
-	j.assign(_json());
-	j.assign(10086);
-	
-	auto x = json::array();
-	x.resize(5);
-	j = x;
-	x.clear();
 
-	j =
-	{
-		999,222,
+	using sjson::_sjson_detail::parser;
+
+	std::string s = R"__( 
+{
+	"s",[""],
+"ss",[],
+"x":{"aa":bb}
+},1,2,3,4,5
+)__";
+
+	
+
+	//parser<json> p2 = parser<json>(std::cin);
+
+	//std::cout << jjj.dump();
+
+	//std::cout << p2.result().dump() << '\n';
+
+	auto p = parser<json>(s.begin(), s.end());
+
+	std::cout << p.result().dump();
+
+	std::string s2;
+	//_sjson_detail::escape_to_ascii(s, s2);
+	std::cout << "\n___\n";
+	const json a = {
+		{"pi", 3.141},
+		{"happy", true},
+		{"name", "Niels"},
+		{"nothing", nullptr},
 		{
-			{
-				"arr",
-				{
-					0,1,2,3,4,5,6,7,8,9,
-					true
-				}
-			},
-			{"123",888},
-			{"246",999}
+			"answer", {{"everything", 42}}
 		},
-		j
+		{"list", {1, 0, 2}},
+		{
+			"object",
+			{
+				{"currency", "USD"},
+				{"value", 42.99}
+			}
+		}
 	};
 
-	int d = j[2]["246"];
+	s.clear();
 
-	std::cout << (int)j.at(2)["246"]<<' '<<d<<' '<<(int)j.at(2).at("246");
+	a.dump_to(s, 2, ' ', true);
 
-	std::cout << " " << "/2/arr/10"_json_pointer._get_from(j,false).type_name();
+	std::cout << s << '\n';
 
-	//std::cout << j[3].get<json::array>().size();
+	try
+	{
+		std::cout << a[9].dump(0);
+		//std::cout << a["sss"][0].get<int>();
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what();
+		//MessageBoxA(NULL, e.what(), "e", MB_ICONERROR);
+	}
 
 
 	return 0;

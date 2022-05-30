@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# 排除用于生成 site 的 mkdocs 目录
+mkdocs/

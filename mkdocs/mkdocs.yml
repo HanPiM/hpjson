@@ -1,19 +1,23 @@
-site_name: My Docs
+site_name: hpjson
 theme:
   language: zh
   name: material
+  features:
+    - navigation.tabs
+    - content.code.annotate # 代码注释
   palette:
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: blue grey
       toggle:
         icon: material/weather-sunny
-        name: "日间模式"
+        name: "切换至日间模式"
     - media: "(prefers-color-scheme: light)"
       scheme: default
+      primary: blue grey
       toggle:
         icon: material/weather-night
-        name: "夜间模式"
+        name: "切换至夜间模式"
 
 extra:
   social:
@@ -21,4 +25,29 @@ extra:
       link: https://github.com/HanPiM
 
 plugins:
+  - search
   - git-revision-date
+
+markdown_extensions:
+  - meta
+  - admonition
+  - pymdownx.details # 使 admonition 块可折叠
+  - footnotes
+  - toc:
+      permalink: true
+      permalink_title: "指向本节的链接"
+      
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+      - name: mermaid # 使用流程图
+        class: mermaid
+        format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true # 使内容可以分组
+
+repo_url: https://github.com/HanPiM/hpjson
+repo_name: HanPiM/hpjson
